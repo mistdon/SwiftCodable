@@ -24,9 +24,6 @@ struct Person: Decodable {
     @DecodableDefault.EmptyString
     var firstName: String
 
-    @DecodableDefault.EmptyString
-    var lastName: String
-
     @DecodableDefault.EmptyInt
     var age: Int
     
@@ -36,32 +33,18 @@ struct Person: Decodable {
     @DecodableDefault.False
     var femal: Bool
     
-    var sons: Int
-    
     @DecodableDefault.EmptyList
     var pets : [Pet]
-    
-    @DecodableDefault.EmptyString
-    var familtName: String
+
+    /// 在CodingKeys中移除hands，这样就不会参与decode过程，即使json数据不包含，也能解析成功
+    var hands: Int = 2
     
     enum CodingKeys: CodingKey {
         case firstName
-        case lastName
         case age
         case height
         case femal
-        case sons
         case pets
-    }
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        self._firstName = try container.decode(DecodableDefault.EmptyString.self, forKey: .firstName)
-        self._lastName = try container.decode(DecodableDefault.EmptyString.self, forKey: .lastName)
-        self._age = try container.decode(DecodableDefault.EmptyInt.self, forKey: .age)
-        self._height = try container.decode(DecodableDefault.EmptyDouble.self, forKey: .height)
-        self._femal = try container.decode(DecodableDefault.False.self, forKey: .femal)
-        self.sons = try container.decode(Int.self, forKey: .sons)
-        self._pets = try container.decode(DecodableDefault.Wrapper<DecodableDefault.Sources.EmptyList<[Pet]>>.self, forKey: .pets)
     }
 }
 
@@ -76,7 +59,5 @@ let decoder = JSONDecoder()
 let person = try decoder.decode(Person.self, from: json)
 
 print(person.firstName) // Output: Alice
-print(person.lastName) // Output: Doe
-print(person.sons)
 print(person.age)
 

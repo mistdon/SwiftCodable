@@ -299,11 +299,45 @@ extension DecodableDefault {
     typealias EmptyMap<T: Map> = Wrapper<Sources.EmptyMap<T>>
 }
 ```
+使用的例子如下：
+```swift
+struct Person: Decodable {
+    @DecodableDefault.EmptyString
+    var firstName: String
 
-### 注意事项：
+    @DecodableDefault.EmptyInt
+    var age: Int
+    
+    @DecodableDefault.EmptyDouble
+    var height: Double
+    
+    @DecodableDefault.False
+    var femal: Bool
+    
+    @DecodableDefault.EmptyList
+    var pets : [Pet]
 
-1、Codable不能把Int自动转为Bool，比如JSON中value是int，class/strtuc中为bool，就会报错: Expected to decode Bool but found a number instead.
+    /// 在CodingKeys中移除hands，这样就不会参与decode过程，即使json数据不包含，也能解析成功
+    var hands: Int = 2
+    
+    enum CodingKeys: CodingKey {
+        case firstName
+        case age
+        case height
+        case femal
+        case pets
+    }
+}
+```
+### 总结：
+1、Decodable严格遵循Apple的规则，每个包含的类都要遵循Decodable协议
 
-2、Coding没有默认值的概念，要么是必选，要么是可选。必选的话JSON必须包含，否则会报错，建议让所有参数都是可选。
+2、Decodable不能把Int自动转为Bool，比如JSON中value是int，class/strtuc中为bool，就会报错: Expected to decode Bool but found a number instead.
+
+3、Decodable没有默认值的概念，要么是必选，要么是可选。必选的话JSON必须包含，否则会报错，建议让所有参数都是可选。
+
+4、本地新增的字段都在 `CodingKeys`中排除
+
+5、不支持 `value: [String: Any]`的格式，需要特别支持
 
 参考链接：https://www.swiftbysundell.com/tips/default-decoding-values/
